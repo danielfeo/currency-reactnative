@@ -10,6 +10,7 @@ export default function HomeScreen() {
   const [price,setPrice] = useState(0);
   const [pircebtc,setPricebtc] = useState(1);
   const [Pricebtccop,setPricebtccop] = useState(2);
+  const [date,setDate] = useState(3);
 
   function formatMoney(number, decPlaces, decSep, thouSep) {
     decPlaces = isNaN(decPlaces = Math.abs(decPlaces)) ? 2 : decPlaces,
@@ -33,16 +34,29 @@ export default function HomeScreen() {
         <Button
           title="Ver mercados"
           onPress={()=>{
-            return fetch('http://data.fixer.io/api/latest?access_key='+Api.getApi()+'&base=EUR&symbols=COP,BTC')
+            fetch('https://api.kraken.com/0/public/Ticker?pair=XXBTZEUR')
             .then((response) => response.json())
-            .then((responseJson) => {
-              console.log(responseJson)
-              let btc =  1 / parseFloat(responseJson.rates['BTC']);
-              let eur =  parseFloat(responseJson.rates['COP']).toFixed(2);
-              let copbtc = eur * btc
-              setPrice(formatMoney(eur,2,',','.'))
-              setPricebtc(formatMoney(btc,2,',','.'))
-              setPricebtccop(formatMoney(copbtc,2,',','.'))
+            .then((responseKraken) => {
+                console.log('kraken: ',responseKraken)
+                fetch('http://data.fixer.io/api/latest?access_key='+Api.getApi()+'&base=EUR&symbols=COP,BTC')
+                .then((response) => response.json())
+                .then((responseFixer) => {
+                  console.log('fixerio: ',responseFixer)                  
+                  let eur = 0;
+                  let date = Date(parseInt(responseFixer.timestamp)*1000)
+                  console.log(date)
+                  eur =  parseFloat(responseFixer.rates['COP']).toFixed(2);
+                  let btc = parseFloat(responseKraken.result['XXBTZEUR']['a'][0]);
+                  let copbtc = eur * btc
+                  setPrice(formatMoney(eur,2,',','.'))
+                  setPricebtc(formatMoney(btc,2,',','.'))
+                  setPricebtccop(formatMoney(copbtc,2,',','.'))
+                  setDate(date)
+                })
+                .catch((error) =>{
+                  console.error(error);
+                });
+                
             })
             .catch((error) =>{
               console.error(error);
@@ -57,6 +71,7 @@ export default function HomeScreen() {
         <Text style={styles.tabBarInfoText}>Eur to COP: (€) {price}</Text>
         <Text style={styles.tabBarInfoText}>Eur to BTC: (€) {pircebtc}</Text>
         <Text style={styles.tabBarInfoText}>COP to BTC: ($) {Pricebtccop}</Text>
+        <Text style={styles.tabBarDateText}>{date}</Text>
       </View>
     </View>
   );
@@ -138,7 +153,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   tabBarInfoText: {
-    fontSize: 17,
+    fontSize: 25,
     color: 'rgba(96,100,109, 1)',
     textAlign: 'center',
   },
