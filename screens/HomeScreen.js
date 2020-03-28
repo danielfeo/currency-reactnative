@@ -8,9 +8,10 @@ import * as Api from '../Api.js';
 
 export default function HomeScreen() {
   const [price,setPrice] = useState(0);
-  const [pircebtc,setPricebtc] = useState(1);
-  const [Pricebtccop,setPricebtccop] = useState(2);
-  const [date,setDate] = useState(3);
+  const [pircebtc,setPricebtc] = useState(0);
+  const [Pricebtccop,setPricebtccop] = useState(0);
+  const [date,setDate] = useState(0);
+  const [localbtc,setLocalbtc] = useState(0);
 
   function formatMoney(number, decPlaces, decSep, thouSep) {
     decPlaces = isNaN(decPlaces = Math.abs(decPlaces)) ? 2 : decPlaces,
@@ -63,6 +64,22 @@ export default function HomeScreen() {
             });
           }} 
         />
+        </View>
+        <View style={styles.helpContainer}>
+        <Button
+          title="LocalBTC"
+          onPress={()=>{
+            fetch('https://localbitcoins.com/api/equation/(bitstampusd_avg*usd_in_cop)-((bitstampusd_avg*usd_in_cop)*0.064)')
+            .then((response) => response.json())
+            .then((responseLocal) => {
+                console.log('localbtc: ',responseLocal)
+                setLocalbtc(formatMoney(responseLocal.data,2,',','.'))
+            })
+            .catch((error) =>{
+              console.error(error);
+            });
+          }} 
+        />
           
         </View>
       </ScrollView>
@@ -71,7 +88,8 @@ export default function HomeScreen() {
         <Text style={styles.tabBarInfoText}>Eur to COP: (€) {price}</Text>
         <Text style={styles.tabBarInfoText}>Eur to BTC: (€) {pircebtc}</Text>
         <Text style={styles.tabBarInfoText}>COP to BTC: ($) {Pricebtccop}</Text>
-        <Text style={styles.tabBarDateText}>{date}</Text>
+        <Text style={styles.tabBarInfoText}>localbitcoins to COP: ($) {localbtc}</Text>
+        <Text style={styles.tabBarDateText}>{date?date:''}</Text>
       </View>
     </View>
   );
