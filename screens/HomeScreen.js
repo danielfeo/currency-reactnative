@@ -61,12 +61,14 @@ export default function HomeScreen() {
                 })
                 .catch((error) =>{
                   console.error(error);
+                  alert('cambio no soportado no hay conexion de red')
                   setLoading(false)
                 });
                 
             })
             .catch((error) =>{
               console.error(error);
+              alert('cambio no soportado no hay conexion de red')
               setLoading(false)
             });
           }} 

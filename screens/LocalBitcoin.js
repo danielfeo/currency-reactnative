@@ -11,17 +11,11 @@ import * as Api from '../Api.js';
 
 export default function LocalBitcoin() {
   const [source,setSource] = useState('COP');
+  const [names,setNames] = useState('Colombian Peso (COP)');
   const [loading,setLoading] = useState(false);
   const [buy,setBuy] = useState(0);
   const [sell,setSell] = useState(0);
-  const items = [{
-    id: 7,
-    name: 'Go',
-  },
-  {
-    id: 8,
-    name: 'Swift',
-  }]
+
   const currencies= [
     {id:'DZD',name:"Algerian Dinar (DZD)"},
     {id:'NAD',name:"Namibian Dollar (NAD)"},
@@ -222,8 +216,8 @@ export default function LocalBitcoin() {
           }}
           onItemSelect={item =>{
             if (typeof(item) !== 'undefined') {
-            
                 setSource(item.id)
+                setNames(item.name)
             }
           }}
           //onItemSelect called after the selection from the dropdown
@@ -257,7 +251,7 @@ export default function LocalBitcoin() {
           //mapping of item array
           defaultIndex={'COP'}
           //default selected item index
-          placeholder="placeholder"
+          placeholder="Busca tu moneda"
           //place holder for the search input
           resetValue={false}
           //reset textInput Value with true and false state
@@ -266,7 +260,7 @@ export default function LocalBitcoin() {
         />
       <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <ActivityIndicator size="large" color="#0000ff" animating={loading} />
-        <Text style={styles.tabBarInfoText}> {source}</Text>
+        <Text style={styles.tabBarInfoText}> Ver ofertas en {names}</Text>
       
     
         <View style={styles.helpContainer}>
@@ -278,7 +272,7 @@ export default function LocalBitcoin() {
             .then((response) => response.json())
             .then((responseBuy) => {
                 if (typeof(responseBuy.data) == 'undefined') {
-                    
+                    alert('cambio no soportado no hay conexion de red')
                 }else{
                     console.log(responseBuy.data.ad_list[0].data.temp_price)
                     setBuy(formatMoney(responseBuy.data.ad_list[0].data.temp_price))
@@ -288,6 +282,7 @@ export default function LocalBitcoin() {
                 .then((responseSell) => {
                 if (typeof(responseSell.data) == 'undefined') {
                     setLoading(false)
+                    alert('cambio no soportado no hay conexion de red')
                 }else{
                     console.log(responseSell.data.ad_list[0].data.temp_price)
                     setSell(formatMoney(responseSell.data.ad_list[0].data.temp_price))
@@ -296,12 +291,14 @@ export default function LocalBitcoin() {
                 })
                 .catch((error) =>{
                 console.error(error);
+                alert('cambio no soportado no hay conexion de red')
                 setLoading(false)
                 });
 
             })
             .catch((error) =>{
               console.error(error);
+              alert('cambio no soportado no hay conexion de red')
               setLoading(false)
             });
 
