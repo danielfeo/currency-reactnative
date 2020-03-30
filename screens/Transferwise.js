@@ -1,18 +1,16 @@
 import * as React from 'react';
-import {ActivityIndicator, Button,Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Button,Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Input } from 'react-native-elements';
 import { ScrollView } from 'react-native-gesture-handler';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import * as WebBrowser from 'expo-web-browser';
 import { MonoText } from '../components/StyledText';
 import { useState } from 'react';
 import * as Api from '../Api.js';
 
-export default function HomeScreen() {
-  const [price,setPrice] = useState(0);
-  const [pircebtc,setPricebtc] = useState(0);
-  const [Pricebtccop,setPricebtccop] = useState(0);
-  const [date,setDate] = useState(0);
-  const [localbtc,setLocalbtc] = useState(0);
-  const [loading,setLoading] = useState(false);
+export default function Transferwise() {
+  const [source,setSource] = useState(0);
+  const [target,setTarget] = useState(0);
 
   function formatMoney(number, decPlaces, decSep, thouSep) {
     decPlaces = isNaN(decPlaces = Math.abs(decPlaces)) ? 2 : decPlaces,
@@ -31,56 +29,55 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-        
-        <View style={styles.helpContainer}>
-        
-        <Button
-          title="Ver mercados"
-          onPress={()=>{
 
-            setLoading(true)
-            fetch('https://api.kraken.com/0/public/Ticker?pair=XXBTZEUR')
+        <Input
+        placeholder='ex:USD'
+        label='Moneda Origen'
+        rightIcon={
+          <Icon
+            name='home'
+            size={14}
+            color='black'
+          />
+        }
+        onChangeText={text => setSource(text)}
+        value={source}
+        />
+    
+        <Input
+        placeholder='ex:EUR'
+        label='Moneda Destino'
+        rightIcon={
+          <Icon
+            name='globe'
+            size={14}
+            color='black'
+          />
+        }
+        onChangeText={text => setTarget(text)}
+        value={target}
+        />
+        <View style={styles.helpContainer}>
+        <Button
+          title="Calcular"
+          onPress={()=>{
+              /*
+            fetch('https://api.transferwise.tech/v1/rates?source='+source+'&target='+target)
             .then((response) => response.json())
-            .then((responseKraken) => {
-                console.log('kraken: ',responseKraken)
-                fetch('http://data.fixer.io/api/latest?access_key='+Api.getApi()+'&base=EUR&symbols=COP,BTC')
-                .then((response) => response.json())
-                .then((responseFixer) => {
-                  console.log('fixerio: ',responseFixer)                  
-                  let eur = 0;
-                  let date = Date(parseInt(responseFixer.timestamp)*1000)
-                  console.log(date)
-                  eur =  parseFloat(responseFixer.rates['COP']).toFixed(2);
-                  let btc = parseFloat(responseKraken.result['XXBTZEUR']['a'][0]);
-                  let copbtc = eur * btc
-                  setPrice(formatMoney(eur,2,',','.'))
-                  setPricebtc(formatMoney(btc,2,',','.'))
-                  setPricebtccop(formatMoney(copbtc,2,',','.'))
-                  setDate(date)
-                  setLoading(false)
-                })
-                .catch((error) =>{
-                  console.error(error);
-                  setLoading(false)
-                });
-                
+            .then((responseTrasfer) => {
+                console.log(responseTrasfer)
             })
             .catch((error) =>{
               console.error(error);
-              setLoading(false)
-            });
+            });*/
           }} 
         />
-        <ActivityIndicator size="large" color="#0000ff" animating={loading} />
         </View>
-      
       </ScrollView>
 
       <View style={styles.tabBarInfoContainer}>
-        <Text style={styles.tabBarInfoText}>Eur to COP: (€) {price}</Text>
-        <Text style={styles.tabBarInfoText}>Eur to BTC: (€) {pircebtc}</Text>
-        <Text style={styles.tabBarInfoText}>COP to BTC: ($) {Pricebtccop}</Text>
-        <Text style={styles.tabBarDateText}>{date?date:''}</Text>
+        <Text style={styles.tabBarInfoText}>Eur to COP: (€) {source}</Text>
+        <Text style={styles.tabBarInfoText}>Eur to BTC: (€) {target}</Text>
       </View>
     </View>
   );
@@ -88,7 +85,7 @@ export default function HomeScreen() {
 
 
 
-HomeScreen.navigationOptions = {
+Transferwise.navigationOptions = {
   header: null,
 };
 
